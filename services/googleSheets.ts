@@ -1,23 +1,38 @@
 import { google } from "googleapis";
+import { createPrivateKey } from "crypto";
 import type { LicitacaoRow } from "@/types";
 
 const SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID!;
 const CONSULTA_RANGE = "Consulta!A2:K";
 const UPDATE_RANGE = "Atualização!A1";
 
+function normalizePrivateKey(raw: string): string {
+  // Remove aspas externas e normaliza \n literais para quebras de linha reais
+  let key = raw.replace(/^"|"$/g, "").replace(/\\n/g, "\n");
+
+  // Converte PKCS#1 → PKCS#8 via crypto para compatibilidade com Node 18+ / OpenSSL 3
+  try {
+    const keyObj = createPrivateKey({ key, format: "pem" });
+    return keyObj.export({ type: "pkcs8", format: "pem" }) as string;
+  } catch {
+    // Se já estiver em formato aceitável, retorna como está
+    return key;
+  }
+}
+
 function getAuthClient() {
-  const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+  const rawKey = process.env.GOOGLE_PRIVATE_KEY ?? "";
   const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
 
-  if (!privateKey || !clientEmail) {
+  if (!rawKey || !clientEmail) {
     throw new Error("Missing Google credentials environment variables");
   }
 
-  return new google.auth.GoogleAuth({
-    credentials: {
-      private_key: privateKey,
-      client_email: clientEmail,
-    },
+  const privateKey = normalizePrivateKey(rawKey);
+
+  return new google.auth.JWT({
+    email: clientEmail,
+    key: privateKey,
     scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
   });
 }

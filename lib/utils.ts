@@ -10,11 +10,27 @@ export function cn(...inputs: ClassValue[]) {
 export function formatDate(dateStr: string): string {
   if (!dateStr) return "-";
   const cleaned = dateStr.trim();
-  const formats = ["dd/MM/yyyy", "yyyy-MM-dd", "MM/dd/yyyy", "dd-MM-yyyy"];
-  for (const fmt of formats) {
+
+  // Tenta parse via Date nativo primeiro (cobre ISO 8601: 2025-09-04T08:30:00)
+  const native = new Date(cleaned);
+  if (isValid(native) && cleaned.includes("T")) {
+    return format(native, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR });
+  }
+
+  const fmts = [
+    "dd/MM/yyyy HH:mm:ss",
+    "dd/MM/yyyy HH:mm",
+    "yyyy-MM-dd HH:mm:ss",
+    "dd/MM/yyyy",
+    "yyyy-MM-dd",
+    "MM/dd/yyyy",
+    "dd-MM-yyyy",
+  ];
+  for (const fmt of fmts) {
     const parsed = parse(cleaned, fmt, new Date());
     if (isValid(parsed)) {
-      return format(parsed, "dd/MM/yyyy", { locale: ptBR });
+      const hasTime = fmt.includes("HH");
+      return format(parsed, hasTime ? "dd/MM/yyyy 'às' HH:mm" : "dd/MM/yyyy", { locale: ptBR });
     }
   }
   return cleaned;

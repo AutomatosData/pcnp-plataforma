@@ -33,9 +33,17 @@ async function fetchLastUpdate(): Promise<string> {
 
 function parseRowDate(dateStr: string): Date | null {
   if (!dateStr?.trim()) return null;
-  const formats = ["dd/MM/yyyy", "yyyy-MM-dd", "MM/dd/yyyy"];
+  const cleaned = dateStr.trim();
+
+  // ISO 8601 com hora: 2025-09-04T08:30:00
+  if (cleaned.includes("T")) {
+    const d = new Date(cleaned);
+    if (isValid(d)) return d;
+  }
+
+  const formats = ["dd/MM/yyyy", "yyyy-MM-dd", "MM/dd/yyyy", "yyyy-MM-dd HH:mm:ss"];
   for (const fmt of formats) {
-    const d = parse(dateStr.trim(), fmt, new Date());
+    const d = parse(cleaned, fmt, new Date());
     if (isValid(d)) return d;
   }
   return null;
