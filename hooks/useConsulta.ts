@@ -61,11 +61,15 @@ function applyFilters(rows: LicitacaoRow[], filters: LicitacaoFilters): Licitaca
       const filterDate = parseRowDate(filters.dataFinal);
       if (rowDate && filterDate && isAfter(rowDate, startOfDay(filterDate))) return false;
     }
-    if (filters.objeto?.trim()) {
-      if (!row.objeto.toLowerCase().includes(filters.objeto.toLowerCase().trim())) return false;
+    if (filters.palavras?.length) {
+      const objetoLower = row.objeto.toLowerCase();
+      for (const p of filters.palavras) {
+        if (!objetoLower.includes(p.toLowerCase().trim())) return false;
+      }
     }
-    if (filters.uf?.trim()) {
-      if (row.uf.trim().toUpperCase() !== filters.uf.trim().toUpperCase()) return false;
+    if (filters.ufs?.length) {
+      const lower = filters.ufs.map((u) => u.toUpperCase());
+      if (!lower.includes(row.uf.trim().toUpperCase())) return false;
     }
     if (filters.municipios?.length) {
       const lower = filters.municipios.map((m) => m.toLowerCase());

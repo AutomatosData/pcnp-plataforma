@@ -17,8 +17,8 @@ export interface LicitacaoRow {
 export interface LicitacaoFilters {
   dataInicial?: string;
   dataFinal?: string;
-  objeto?: string;
-  uf?: string;
+  palavras?: string[];
+  ufs?: string[];
   municipios?: string[];
   disputas?: string[];
   modalidades?: string[];

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { useQueryState, parseAsString, parseAsArrayOf } from "nuqs";
+import { useQueryState, parseAsArrayOf, parseAsString } from "nuqs";
 import type { LicitacaoFilters } from "@/types";
 
 export function useFilters() {
@@ -13,8 +13,14 @@ export function useFilters() {
     "dataFinal",
     parseAsString.withDefault("")
   );
-  const [objeto, setObjeto] = useQueryState("objeto", parseAsString.withDefault(""));
-  const [uf, setUf] = useQueryState("uf", parseAsString.withDefault(""));
+  const [palavras, setPalavras] = useQueryState(
+    "palavras",
+    parseAsArrayOf(parseAsString).withDefault([])
+  );
+  const [ufs, setUfs] = useQueryState(
+    "ufs",
+    parseAsArrayOf(parseAsString).withDefault([])
+  );
   const [municipios, setMunicipios] = useQueryState(
     "municipios",
     parseAsArrayOf(parseAsString).withDefault([])
@@ -32,13 +38,13 @@ export function useFilters() {
     () => ({
       dataInicial: dataInicial || undefined,
       dataFinal: dataFinal || undefined,
-      objeto: objeto || undefined,
-      uf: uf || undefined,
+      palavras: palavras.length ? palavras : undefined,
+      ufs: ufs.length ? ufs : undefined,
       municipios: municipios.length ? municipios : undefined,
       disputas: disputas.length ? disputas : undefined,
       modalidades: modalidades.length ? modalidades : undefined,
     }),
-    [dataInicial, dataFinal, objeto, uf, municipios, disputas, modalidades]
+    [dataInicial, dataFinal, palavras, ufs, municipios, disputas, modalidades]
   );
 
   const hasActiveFilters = useMemo(
@@ -46,41 +52,41 @@ export function useFilters() {
       !!(
         dataInicial ||
         dataFinal ||
-        objeto ||
-        uf ||
+        palavras.length ||
+        ufs.length ||
         municipios.length ||
         disputas.length ||
         modalidades.length
       ),
-    [dataInicial, dataFinal, objeto, uf, municipios, disputas, modalidades]
+    [dataInicial, dataFinal, palavras, ufs, municipios, disputas, modalidades]
   );
 
   const clearFilters = useCallback(async () => {
     await Promise.all([
       setDataInicial(null),
       setDataFinal(null),
-      setObjeto(null),
-      setUf(null),
+      setPalavras(null),
+      setUfs(null),
       setMunicipios(null),
       setDisputas(null),
       setModalidades(null),
     ]);
-  }, [setDataInicial, setDataFinal, setObjeto, setUf, setMunicipios, setDisputas, setModalidades]);
+  }, [setDataInicial, setDataFinal, setPalavras, setUfs, setMunicipios, setDisputas, setModalidades]);
 
   return {
     filters,
     hasActiveFilters,
     dataInicial,
     dataFinal,
-    objeto,
-    uf,
+    palavras,
+    ufs,
     municipios,
     disputas,
     modalidades,
     setDataInicial,
     setDataFinal,
-    setObjeto,
-    setUf,
+    setPalavras,
+    setUfs,
     setMunicipios,
     setDisputas,
     setModalidades,
