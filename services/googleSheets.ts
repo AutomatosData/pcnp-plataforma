@@ -3,7 +3,7 @@ import { createPrivateKey } from "crypto";
 import type { LicitacaoRow } from "@/types";
 
 const SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID!;
-const CONSULTA_RANGE = "Consulta!A2:K";
+const CONSULTA_RANGE = "Consulta!A2:M";
 const UPDATE_RANGE = "Atualização!A1";
 
 function normalizePrivateKey(raw: string): string {
@@ -74,5 +74,7 @@ export async function getConsultaRows(): Promise<LicitacaoRow[]> {
       processo: String(row[8] ?? ""),
       modalidade: String(row[9] ?? ""),
       disputa: String(row[10] ?? ""),
+      anoCompra: String(row[11] ?? ""),
+      sequencialCompra: String(row[12] ?? ""),
     }));
 }

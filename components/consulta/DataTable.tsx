@@ -11,6 +11,7 @@ import {
   ChevronsRight,
   Download,
   Eye,
+  ExternalLink,
   FileX,
   AlertCircle,
 } from "lucide-react";
@@ -55,6 +56,14 @@ function SortIcon({ column, sort }: { column: keyof LicitacaoRow; sort: SortStat
   ) : (
     <ChevronDown className="h-3 w-3 text-primary" />
   );
+}
+
+function buildPncpUrl(row: LicitacaoRow): string | null {
+  const cnpj = row.cnpj?.replace(/\D/g, "");
+  const ano = row.anoCompra;
+  const seq = row.sequencialCompra;
+  if (!cnpj || !ano || !seq) return null;
+  return `https://pncp.gov.br/app/editais/${cnpj}/${ano}/${seq}`;
 }
 
 function TableSkeleton({ rows }: { rows: number }) {
@@ -245,14 +254,30 @@ export function DataTable({ rows, total, isLoading, isError, onViewDetail }: Dat
                       {row.municipio || "-"}
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onViewDetail(row)}
-                        className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center justify-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onViewDetail(row)}
+                          className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          title="Ver detalhes"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        {buildPncpUrl(row) && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            asChild
+                            className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-blue-600 hover:text-blue-700"
+                            title="Abrir no PNCP"
+                          >
+                            <a href={buildPncpUrl(row)!} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="h-4 w-4" />
+                            </a>
+                          </Button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))

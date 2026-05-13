@@ -10,6 +10,8 @@ export interface LicitacaoRow {
   processo: string;
   modalidade: string;
   disputa: string;
+  anoCompra: string;
+  sequencialCompra: string;
 }
 
 export interface LicitacaoFilters {
