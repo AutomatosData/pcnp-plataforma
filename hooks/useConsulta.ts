@@ -63,9 +63,7 @@ function applyFilters(rows: LicitacaoRow[], filters: LicitacaoFilters): Licitaca
     }
     if (filters.palavras?.length) {
       const objetoLower = row.objeto.toLowerCase();
-      for (const p of filters.palavras) {
-        if (!objetoLower.includes(p.toLowerCase().trim())) return false;
-      }
+      if (!filters.palavras.some((p) => objetoLower.includes(p.toLowerCase().trim()))) return false;
     }
     if (filters.ufs?.length) {
       const lower = filters.ufs.map((u) => u.toUpperCase());

@@ -219,7 +219,7 @@ function TagInput({ label, tags, onChange, placeholder }: TagInputProps) {
       </div>
       {tags.length > 0 && (
         <p className="text-xs text-muted-foreground">
-          Pressione <kbd className="px-1 py-0.5 rounded border border-border text-[10px]">Enter</kbd> para adicionar · clique no <X className="inline h-2.5 w-2.5" /> para remover
+          <kbd className="px-1 py-0.5 rounded border border-border text-[10px]">Enter</kbd> para adicionar · resultados contêm <strong>qualquer</strong> palavra · <X className="inline h-2.5 w-2.5" /> para remover
         </p>
       )}
     </div>
